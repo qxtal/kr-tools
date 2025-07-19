@@ -12,7 +12,14 @@ IMAGE_SUPPORTED_FORMATS = ('.jpg', '.jpeg', '.png', '.bmp', '.webp', '.avif', '.
 IMAGE_OUTPUT_FORMAT = 'webp'
 IMAGE_OUTPUT_MAX_RES = 512
 IMAGE_OUTPUT_QUALITY = 85
-IMAGE_MAGICK_COMMAND = f'-resize {IMAGE_OUTPUT_MAX_RES}x{IMAGE_OUTPUT_MAX_RES}\\> -quality {IMAGE_OUTPUT_QUALITY}'
+IMAGE_MAGICK_COMMAND = [
+    f'-resize',f'{IMAGE_OUTPUT_MAX_RES}x{IMAGE_OUTPUT_MAX_RES}>',
+    f'-quality',f'{IMAGE_OUTPUT_QUALITY}',
+]
+
+# Fix for Windows systems, adds a caret before `>` characters to escape it.
+if sys.platform == "win32":
+    IMAGE_MAGICK_COMMAND = [a.replace('>', '^>') for a in IMAGE_MAGICK_COMMAND]
 
 def main():
     parser = argparse.ArgumentParser(description="Compile image pool for distribution")
@@ -132,14 +139,14 @@ def main():
             # *least* 4 characters long, otherwise the output folder structure could break.
             if len(img_id) < 4:
                 print("\033[91m[ERROR]\033[0m", end=' ')
-                print("Invalid _src_id! Must be at least 4 characters. Skipping.")
+                print("Invalid image ID! Must be at least 4 characters. Skipping.")
                 print(f"  img: {src_image}, id: {img_id}")
                 continue
 
             # Check if image ID is alphanumeric (a-z, A-Z, 0-9)
             if not re.fullmatch(r'[a-zA-Z0-9]+', img_id):
                 print("\033[91m[ERROR]\033[0m", end=' ')
-                print("Invalid _src_id! Must be alphanumeric (a-z, A-Z, 0-9). Skipping.")
+                print("Invalid image ID! Must be alphanumeric (a-z, A-Z, 0-9). Skipping.")
                 print(f"  img: {src_image}, id: {img_id}")
                 continue
 
@@ -168,8 +175,7 @@ def main():
 
             print(f"[{i}:{j}] {src_image} -> {out_image_path}", end="\t")
             
-            cmd = f'{magick_path} {shlex.quote(src_image_path)} {IMAGE_MAGICK_COMMAND} {shlex.quote(out_image_path)}'
-
+            cmd = [magick_path, src_image_path, *IMAGE_MAGICK_COMMAND, out_image_path]
             result = subprocess.run(
                 cmd,
                 shell=True,
