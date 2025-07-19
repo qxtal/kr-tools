@@ -1,0 +1,3 @@
+# source images and output directory for image pool compiler
+ipc/out/
+ipc/source/
