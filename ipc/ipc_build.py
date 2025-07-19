@@ -15,8 +15,8 @@ IMAGE_OUTPUT_QUALITY = 85
 IMAGE_MAGICK_COMMAND = f'-resize {IMAGE_OUTPUT_MAX_RES}x{IMAGE_OUTPUT_MAX_RES}\\> -quality {IMAGE_OUTPUT_QUALITY}'
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepare source image files for the Image Pool Compiler.")
-    parser.add_argument('--source-path', type=str, default=DEFAULT_SOURCE_PATH, help='Path to the source directory (default: "src")')
+    parser = argparse.ArgumentParser(description="Compile image pool for distribution")
+    parser.add_argument('--source-path', type=str, default=DEFAULT_SOURCE_PATH, help='Path to the source directory (default: "source")')
     parser.add_argument('--output-path', type=str, default=DEFAULT_OUTPUT_PATH, help='Path to the output directory (default: "out")')
     parser.add_argument('--base-url', type=str, default=DEFAULT_BASE_URL, help='Base URL (default: "http://localhost/")')
     parser.add_argument('--magick', type=str, default=DEFAULT_IMAGEMAGICK_PATH, help='Direct path for ImageMagick\'s `magick` executable (default: tries global "magick")')
