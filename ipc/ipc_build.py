@@ -28,7 +28,7 @@ def main():
     parser.add_argument('--base-url', type=str, default=DEFAULT_BASE_URL, help='Base URL (default: "http://localhost/")')
     parser.add_argument('--magick', type=str, default=DEFAULT_IMAGEMAGICK_PATH, help='Direct path for ImageMagick\'s `magick` executable (default: tries global "magick")')
     args = parser.parse_args()
-    
+
     # we've parsed the arguments. time to set up the rest
     src_path = args.source_path
     output_path = args.output_path
@@ -73,7 +73,7 @@ def main():
     for i, category_folder in enumerate(category_folders):
         category_start_index = cumulative_length
         category_length = 0
-        
+
         src_category_path = os.path.join(src_path, category_folder)
 
         # split the category folder name: "XX - Category Name"
@@ -87,7 +87,7 @@ def main():
             f"Processing category {i + 1} of {len(category_folders)}: " +
             f"[{category_number:02d}] {category_name}" +
             "\033[0m")
-        
+
         # create output category folder
         try:
             os.makedirs(out_category_path, exist_ok=True)
@@ -96,7 +96,7 @@ def main():
             print("Failed to create output category folder. Skipping.")
             print(f"'{out_category_path}': {e}")
             continue
-        
+
         src_image_files = [
             f for f in os.listdir(src_category_path)
             if f.startswith(IMAGE_FILENAME_MAGIC_CONSTANT)
@@ -174,11 +174,12 @@ def main():
                 continue
 
             print(f"[{i}:{j}] {src_image} -> {out_image_path}", end="\t")
-            
+
             cmd = [magick_path, src_image_path, *IMAGE_MAGICK_COMMAND, out_image_path]
+
             result = subprocess.run(
                 cmd,
-                shell=True,
+                shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -210,7 +211,7 @@ def main():
             f"Finished processing category! " +
             f"{category_length} images inside category [{category_number:02d}] {category_name}" + 
             "\033[0m\n")
-    
+
     # add total length of items to manifest
     manifest["pool"]["total_length"] = int(cumulative_length)
 
@@ -221,7 +222,7 @@ def main():
         print("\033[91m[ERROR]\033[0m Mismatch between total length and number of URLs in manifest!")
         print(f"  total_length: {manifest['pool']['total_length']}, urls: {len(manifest['pool']['urls'])}")
         fail = True
-    
+
     if len(manifest["pool"]["urls"]) != len(manifest["pool"]["attributes"]):
         print("\033[91m[ERROR]\033[0m Mismatch between number of attributes and number of URLs in manifest!")
         print(f"  urls: {len(manifest['pool']['urls'])}, attributes: {len(manifest['pool']['attributes'])}")
